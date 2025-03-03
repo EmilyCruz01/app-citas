@@ -1,6 +1,10 @@
 package com.example.app_citas.newDate.presentation
 
 
+import android.Manifest
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,67 +35,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
-import com.example.app_citas.newDate.data.model.NewDateRequest
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
-//@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-//@Composable
-//fun DatePickerExample() {
-//
-//    var selectedDate by remember { mutableStateOf<Long?>(null) }
-//    val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
-//
-//    // Texto que muestra la fecha seleccionada
-//    val dateText = selectedDate?.let { dateFormatter.format(Date(it)) } ?: "Seleccionar fecha"
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp),
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        // Campo de texto que muestra la fecha seleccionada
-//        TextField(
-//            value = dateText,
-//            onValueChange = {},
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .clickable { showDatePicker = true },
-//            readOnly = true
-//        )
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        // Mostrar el DatePicker si showDatePicker es true
-//        if (showDatePicker) {
-//            DatePickerDialog(
-//                onDismissRequest = { showDatePicker = false },
-//                confirmButton = {
-//                    Button(
-//                        onClick = { showDatePicker = false }
-//                    ) {
-//                        Text("Aceptar")
-//                    }
-//                }
-//            ) {
-//                val datePickerState = rememberDatePickerState()
-//                DatePicker(state = datePickerState)
-//
-//                // Cuando el usuario selecciona una fecha
-//                LaunchedEffect(datePickerState.selectedDateMillis) {
-//                    selectedDate = datePickerState.selectedDateMillis
-//                }
-//            }
-//        }
-//    }
-//}
+@Composable
+fun RequestAudioPermission(onGranted: () -> Unit) {
+    val context = LocalContext.current
+    val permission = Manifest.permission.RECORD_AUDIO
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                onGranted()
+            } else {
+                Toast.makeText(context, "Permiso denegado", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
+
+    Button(
+        onClick = { launcher.launch(permission) },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Permitir acceso al micrófono")
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,6 +72,8 @@ fun NewDateScreen(newDateViewModel: NewDateViewModel) {
     val description by newDateViewModel.description.observeAsState("")
     val date by newDateViewModel.date.observeAsState(Date())
     val dateLong by newDateViewModel.dateLong.observeAsState()
+
+    var hasPermission by remember { mutableStateOf(false) }
 
     val showDatePicker by newDateViewModel.showDatePicker.observeAsState(true)
 
@@ -132,6 +105,23 @@ fun NewDateScreen(newDateViewModel: NewDateViewModel) {
         )
         Spacer(modifier = Modifier.height(40.dp))
 
+        if (!hasPermission) {
+            RequestAudioPermission { hasPermission = true }
+        } else {
+            Button(
+                onClick = {
+                    newDateViewModel.startListening()
+                },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xffff3d00),
+                )
+            ) {
+                Text( text = "dictar descripcion")
+            }
+        }
+
         TextField(
             value = description,
             onValueChange = { newDateViewModel.onChangeDescription(it) },
@@ -151,13 +141,6 @@ fun NewDateScreen(newDateViewModel: NewDateViewModel) {
             ),
         )
         Spacer(modifier = Modifier.height(40.dp))
-
-//        DatePickerTextField(
-//            selectedDate = dateLong,
-//            onDateSelected = { newDate ->
-//                newDateViewModel.updateDate(newDate)
-//            }
-//        )
 
         TextField(
             value = date.toString(),

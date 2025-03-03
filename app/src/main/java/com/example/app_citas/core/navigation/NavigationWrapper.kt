@@ -3,6 +3,7 @@ package com.example.app_citas.core.navigation
 import android.app.Activity
 import android.net.wifi.hotspot2.pps.HomeSp
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -37,7 +38,7 @@ fun NavigationWrapper () {
             DatesScreen(DateViewModel(GetDatesUseCase(), loginViewModel), {navController.navigate(NewDate)})
         }
         composable<NewDate> {
-            NewDateScreen(NewDateViewModel(NewDateUseCase(), loginViewModel, {navController.navigate(Dates)} ))
+            NewDateScreen(NewDateViewModel(NewDateUseCase(), loginViewModel, {navController.navigate(Dates)}, LocalContext.current ))
         }
     }
 }
