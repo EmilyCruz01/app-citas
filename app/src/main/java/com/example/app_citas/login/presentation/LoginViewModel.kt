@@ -14,7 +14,7 @@ import com.example.app_citas.register.presentation.RegisterScreen
 
 class LoginViewModel(private val  loginUseCase: LoginUseCase, private val  navigateRegister: () -> Unit, private val navigateDates: () -> Unit) : ViewModel() {
 
-    var userId by mutableStateOf<String?>(null)
+    var userId by mutableStateOf<Int?>(null)
 
     private val _success = MutableLiveData<Boolean>()
     private val _email = MutableLiveData<String>()

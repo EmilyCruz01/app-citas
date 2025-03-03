@@ -9,36 +9,65 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app_citas.dates.data.model.Date
 
 @Composable
-fun DatesScreen(dateViewModel: DateViewModel ) {
+fun DatesScreen(dateViewModel: DateViewModel, navigateToNewDate: () -> Unit ) {
 
-    val dates = dateViewModel.dates.observeAsState(emptyList())
+    val dates: List<Date> by dateViewModel.dates.observeAsState(emptyList())
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0x002c2b))
+            .background(Color(0xff002c2b))
+            .padding(30.dp)
     ){
-        Text( text = "Tus Citas", fontSize = 50.sp)
+        Text( text = "Tus Citas", fontSize = 50.sp, color = Color(0xffffbc11))
         Spacer(modifier = Modifier.height(20.dp))
 
         LazyColumn {
-            items(dates.value) {
+            items(dates) {
                 date -> Date(date)
             }
         }
 
+
+        Button(
+            onClick = {
+                navigateToNewDate()
+            },
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xffff3d00),
+            )
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "anadir una cita", tint = Color(0xffffbc11))
+        }
+
+    }
+
+    LaunchedEffect(Unit) {
+        if (dates.isEmpty()){
+            dateViewModel.getDates()
+        }
     }
 }
 
@@ -46,13 +75,16 @@ fun DatesScreen(dateViewModel: DateViewModel ) {
 fun Date(date: Date) {
     Column(
         modifier = Modifier
+            .background(Color(0xff076461))
             .padding(20.dp)
             .fillMaxWidth()
     ) {
-        Text(text = date.description, fontSize = 35.sp)
+        Text(text = date.description, fontSize = 35.sp, color = Color(0xffffbc11))
         Spacer( modifier = Modifier.height(10.dp))
-        Text(text = date.description, fontSize = 25.sp)
+        Text(text = date.description, fontSize = 25.sp, color = Color(0xff0a837f))
         Spacer( modifier = Modifier.height(10.dp))
-        Text(text = date.date.toString(), fontSize = 15.sp)
+        Text(text = date.date.toString(), fontSize = 15.sp, color = Color(0xff002c2b))
     }
+    Spacer(modifier = Modifier.height(30.dp))
+
 }

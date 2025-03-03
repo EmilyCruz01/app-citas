@@ -10,3 +10,6 @@ object Register
 
 @Serializable
 object Dates
+
+@Serializable
+object NewDate
