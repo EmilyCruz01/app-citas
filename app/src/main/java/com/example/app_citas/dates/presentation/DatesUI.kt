@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -37,17 +39,10 @@ fun DatesScreen(dateViewModel: DateViewModel, navigateToNewDate: () -> Unit ) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xff002c2b))
-            .padding(30.dp)
+            .padding( vertical = 50.dp, horizontal = 10.dp)
     ){
         Text( text = "Tus Citas", fontSize = 50.sp, color = Color(0xffffbc11))
         Spacer(modifier = Modifier.height(20.dp))
-
-        LazyColumn {
-            items(dates) {
-                date -> Date(date)
-            }
-        }
-
 
         Button(
             onClick = {
@@ -59,7 +54,13 @@ fun DatesScreen(dateViewModel: DateViewModel, navigateToNewDate: () -> Unit ) {
                 containerColor = Color(0xffff3d00),
             )
         ) {
-            Icon(Icons.Default.Add, contentDescription = "anadir una cita", tint = Color(0xffffbc11))
+            Text(text = "Agregar una cita", color = Color(0xff002c2b))
+        }
+
+        LazyColumn {
+            items(dates) {
+                date -> Date(date)
+            }
         }
 
     }
@@ -76,14 +77,15 @@ fun Date(date: Date) {
     Column(
         modifier = Modifier
             .background(Color(0xff076461))
-            .padding(20.dp)
-            .fillMaxWidth()
+            .padding(vertical = 30.dp, horizontal = 10.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = date.description, fontSize = 35.sp, color = Color(0xffffbc11))
+        Text(text = date.title, fontSize = 35.sp, color = Color(0xffffbc11))
         Spacer( modifier = Modifier.height(10.dp))
         Text(text = date.description, fontSize = 25.sp, color = Color(0xff0a837f))
         Spacer( modifier = Modifier.height(10.dp))
-        Text(text = date.date.toString(), fontSize = 15.sp, color = Color(0xff002c2b))
+        Text(text = date.date, fontSize = 15.sp, color = Color(0xff002c2b))
     }
     Spacer(modifier = Modifier.height(30.dp))
 
